@@ -440,6 +440,10 @@ mframe-header-opt
 Target Report Var(flag_frame_header_optimization) Optimization
 Optimize frame header.
 
+mpreferred-stack-boundary=
+Target RejectNegative Joined Var(mips_preferred_stack_boundary_string)
+Attempt to keep stack aligned to this power of 2
+
 noasmopt
 Driver
 
