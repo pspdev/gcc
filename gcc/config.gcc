@@ -2458,7 +2458,7 @@ mipstx39-*-elf* | mipstx39el-*-elf*)
 	tmake_file="mips/t-r3900"
 	;;
 mipsallegrex-*-elf* | mipsallegrexel-*-elf*)
-   tm_file="elfos.h ${tm_file} mips/elf.h"
+   tm_file="elfos.h newlib-stdint.h ${tm_file} mips/elf.h"
    tmake_file=mips/t-allegrex;
    target_cpu_default="MASK_SINGLE_FLOAT|MASK_DIVIDE_BREAKS"
    tm_defines="MIPS_ISA_DEFAULT=2 MIPS_CPU_STRING_DEFAULT=\\\"allegrex\\\" MIPS_ABI_DEFAULT=ABI_EABI"
