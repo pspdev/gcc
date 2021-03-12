@@ -287,6 +287,7 @@ struct mips_cpu_info {
 #define TARGET_SB1                  (mips_arch == PROCESSOR_SB1		\
 				     || mips_arch == PROCESSOR_SB1A)
 #define TARGET_SR71K                (mips_arch == PROCESSOR_SR71000)
+#define TARGET_ALLEGREX             (mips_arch == PROCESSOR_ALLEGREX)
 #define TARGET_XLP                  (mips_arch == PROCESSOR_XLP)
 
 /* Scheduling target defines.  */
@@ -319,6 +320,7 @@ struct mips_cpu_info {
 				     || mips_tune == PROCESSOR_OCTEON3)
 #define TUNE_SB1                    (mips_tune == PROCESSOR_SB1		\
 				     || mips_tune == PROCESSOR_SB1A)
+#define TUNE_ALLEGREX               (mips_tune == PROCESSOR_ALLEGREX)
 #define TUNE_P5600                  (mips_tune == PROCESSOR_P5600)
 #define TUNE_I6400                  (mips_tune == PROCESSOR_I6400)
 #define TUNE_P6600                  (mips_tune == PROCESSOR_P6600)
@@ -1058,6 +1060,9 @@ struct mips_cpu_info {
 				 && !TARGET_MIPS5900			\
 				 && !TARGET_MIPS16)
 
+/* ISA has just the integer condition move instructions (movn,movz) */
+#define ISA_HAS_INT_CONDMOVE   (TARGET_ALLEGREX)
+
 /* ISA has the mips4 FP condition code instructions: FP-compare to CC,
    branch on CC, and move (both FP and non-FP) on CC.  */
 #define ISA_HAS_8CC		(ISA_MIPS4				\
@@ -1093,6 +1098,7 @@ struct mips_cpu_info {
 
 /* ISA has conditional trap instructions.  */
 #define ISA_HAS_COND_TRAP	(!ISA_MIPS1				\
+				 && !TARGET_ALLEGREX				\
 				 && !TARGET_MIPS16)
 
 /* ISA has conditional trap with immediate instructions.  */
@@ -1156,7 +1162,8 @@ struct mips_cpu_info {
 #define ISA_HAS_IEEE_754_2008	(mips_isa_rev >= 2)
 
 /* ISA has count leading zeroes/ones instruction (not implemented).  */
-#define ISA_HAS_CLZ_CLO		(mips_isa_rev >= 1 && !TARGET_MIPS16)
+#define ISA_HAS_CLZ_CLO		((mips_isa_rev >= 1 && !TARGET_MIPS16) \
+                                 || TARGET_ALLEGREX)
 
 /* ISA has count trailing zeroes/ones instruction.  */
 #define ISA_HAS_CTZ_CTO		(TARGET_LOONGSON_EXT2)
@@ -1201,6 +1208,7 @@ struct mips_cpu_info {
 				  || TARGET_MIPS5400			\
 				  || TARGET_MIPS5500			\
 				  || TARGET_SR71K			\
+				  || TARGET_ALLEGREX			\
 				  || TARGET_SMARTMIPS)			\
 				 && !TARGET_MIPS16)
 
@@ -1232,10 +1240,12 @@ struct mips_cpu_info {
 #define ISA_HAS_TRUNC_W		(!ISA_MIPS1)
 
 /* ISA includes the MIPS32r2 seb and seh instructions.  */
-#define ISA_HAS_SEB_SEH		(mips_isa_rev >= 2 && !TARGET_MIPS16)
+#define ISA_HAS_SEB_SEH		((mips_isa_rev >= 2 && !TARGET_MIPS16) \
+                                 || TARGET_ALLEGREX)
 
 /* ISA includes the MIPS32/64 rev 2 ext and ins instructions.  */
-#define ISA_HAS_EXT_INS		(mips_isa_rev >= 2 && !TARGET_MIPS16)
+#define ISA_HAS_EXT_INS		((mips_isa_rev >= 2 && !TARGET_MIPS16) \
+                                 || TARGET_ALLEGREX)
 
 /* ISA has instructions for accessing top part of 64-bit fp regs.  */
 #define ISA_HAS_MXHC1		(!TARGET_FLOAT32	\
@@ -1298,7 +1308,8 @@ struct mips_cpu_info {
 #define ISA_HAS_HILO_INTERLOCKS	(mips_isa_rev >= 1			\
 				 || TARGET_MIPS5500			\
 				 || TARGET_MIPS5900			\
-				 || TARGET_LOONGSON_2EF)
+				 || TARGET_LOONGSON_2EF		\
+				 || TARGET_ALLEGREX)
 
 /* ISA includes synci, jr.hb and jalr.hb.  */
 #define ISA_HAS_SYNCI (mips_isa_rev >= 2 && !TARGET_MIPS16)
@@ -2421,7 +2432,7 @@ enum reg_class
    `crtl->outgoing_args_size'.  */
 #define OUTGOING_REG_PARM_STACK_SPACE(FNTYPE) 1
 
-#define STACK_BOUNDARY (TARGET_NEWABI ? 128 : 64)
+#define STACK_BOUNDARY (mips_preferred_stack_boundary)
 
 /* Symbolic macros for the registers used to return integer and floating
    point values.  */
@@ -2548,7 +2559,7 @@ typedef struct mips_args {
 /* Treat LOC as a byte offset from the stack pointer and round it up
    to the next fully-aligned offset.  */
 #define MIPS_STACK_ALIGN(LOC) \
-  (TARGET_NEWABI ? ROUND_UP ((LOC), 16) : ROUND_UP ((LOC), 8))
+  (ROUND_UP ((LOC), mips_preferred_stack_align))
 
 
 /* Output assembler code to FILE to increment profiler label # LABELNO
@@ -3196,6 +3207,9 @@ while (0)
 	.set pop\n\
 	" TEXT_SECTION_ASM_OP);
 #endif
+
+extern unsigned int mips_preferred_stack_boundary;
+extern unsigned int mips_preferred_stack_align;
 
 #ifndef HAVE_AS_TLS
 #define HAVE_AS_TLS 0
