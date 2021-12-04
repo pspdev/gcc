@@ -27,11 +27,14 @@ Boston, MA 02111-1307, USA.  */
     %{g:-lg} %{!g:-lc} \
     --end-group \
     -lpsputility -lpsprtc -lpspnet_inet -lpspnet_resolver \
-    -lpspuser -lpspkernel"
+    -lpspmodinfo -lpspuser -lpspkernel"
 
 /* Override the startfile spec to include crt0.o. */
 #undef STARTFILE_SPEC
 #define STARTFILE_SPEC "crt0.o%s crti.o%s crtbegin.o%s"
+
+#undef SUBTARGET_CPP_SPEC
+#define SUBTARGET_CPP_SPEC "-DPSP=1 -D__PSP__=1 -D_PSP=1 -D__psp__=1"
 
 #undef ENDFILE_SPEC
 #define ENDFILE_SPEC "crtend.o%s crtn.o%s"
