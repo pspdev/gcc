@@ -344,6 +344,16 @@ mips*-*-*)
     ])],
     [libgcc_cv_mips_hard_float=yes],
     [libgcc_cv_mips_hard_float=no])])
+
+  AC_CACHE_CHECK([whether the target is single-float],
+		 [libgcc_cv_mips_single_float],
+		 [AC_COMPILE_IFELSE(
+    [AC_LANG_SOURCE([#ifndef __mips_single_float
+     #error FOO
+     #endif
+    ])],
+    [libgcc_cv_mips_single_float=yes],
+    [libgcc_cv_mips_single_float=no])])
 esac
 
 case ${host} in

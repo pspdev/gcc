@@ -35,6 +35,7 @@
   74kf2_1
   74kf1_1
   74kf3_2
+  allegrex
   loongson_2e
   loongson_2f
   gs464
@@ -820,7 +821,8 @@
 (define_mode_iterator MOVECC [SI (DI "TARGET_64BIT")
                               (CC "TARGET_HARD_FLOAT
 				   && !TARGET_LOONGSON_2EF
-				   && !TARGET_MIPS5900")])
+				   && !TARGET_MIPS5900
+				   && !TARGET_ALLEGREX")])
 
 ;; This mode iterator allows :FPCC to be used anywhere that an FP condition
 ;; is needed.
@@ -2261,11 +2263,11 @@
 	   (mult:DI
 	      (any_extend:DI (match_operand:SI 1 "register_operand" "d"))
 	      (any_extend:DI (match_operand:SI 2 "register_operand" "d")))))]
-  "!TARGET_64BIT && (ISA_HAS_MSAC || GENERATE_MADD_MSUB || ISA_HAS_DSP)"
+  "!TARGET_64BIT && (ISA_HAS_MSAC || GENERATE_MADD_MSUB || ISA_HAS_DSP || TARGET_ALLEGREX)"
 {
   if (ISA_HAS_DSP_MULT)
     return "msub<u>\t%q0,%1,%2";
-  else if (TARGET_MIPS5500 || GENERATE_MADD_MSUB)
+  else if (TARGET_MIPS5500 || GENERATE_MADD_MSUB || TARGET_ALLEGREX)
     return "msub<u>\t%1,%2";
   else
     return "msac<u>\t$0,%1,%2";
@@ -2544,14 +2546,14 @@
 	 (mult:DI (any_extend:DI (match_operand:SI 1 "register_operand" "d"))
 		  (any_extend:DI (match_operand:SI 2 "register_operand" "d")))
 	 (match_operand:DI 3 "muldiv_target_operand" "0")))]
-  "(TARGET_MAD || ISA_HAS_MACC || GENERATE_MADD_MSUB || ISA_HAS_DSP)
+  "(TARGET_MAD || ISA_HAS_MACC || GENERATE_MADD_MSUB || ISA_HAS_DSP || TARGET_ALLEGREX)
    && !TARGET_64BIT"
 {
   if (TARGET_MAD)
     return "mad<u>\t%1,%2";
   else if (ISA_HAS_DSP_MULT)
     return "madd<u>\t%q0,%1,%2";
-  else if (GENERATE_MADD_MSUB || TARGET_MIPS5500)
+  else if (GENERATE_MADD_MSUB || TARGET_MIPS5500 || TARGET_ALLEGREX)
     return "madd<u>\t%1,%2";
   else
     /* See comment in *macc.  */
@@ -5886,12 +5888,19 @@
   "wsbh\t%0,%1"
   [(set_attr "type" "shift")])
 
-(define_insn_and_split "bswapsi2"
+(define_insn "bswapsi2"
+  [(set (match_operand:SI 0 "register_operand" "=d")
+	(bswap:SI (match_operand:SI 1 "register_operand" "d")))]
+  "ISA_HAS_WSBW"
+  "wsbw\t%0,%1"
+  [(set_attr "type" "shift")])
+
+(define_insn_and_split "bswapsi2_split"
   [(set (match_operand:SI 0 "register_operand" "=d")
 	(bswap:SI (match_operand:SI 1 "register_operand" "d")))]
   "ISA_HAS_WSBH && ISA_HAS_ROR"
   "#"
-  "&& 1"
+  "&& !ISA_HAS_WSBW"
   [(set (match_dup 0) (unspec:SI [(match_dup 1)] UNSPEC_WSBH))
    (set (match_dup 0) (rotatert:SI (match_dup 0) (const_int 16)))]
   ""
@@ -7838,6 +7847,9 @@
 
 ; The MIPS MSA Instructions.
 (include "mips-msa.md")
+
+; Sony ALLEGREX instructions.
+(include "allegrex.md")
 
 (define_c_enum "unspec" [
   UNSPEC_ADDRESS_FIRST

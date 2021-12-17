@@ -491,10 +491,6 @@ case $1 in
 				basic_machine=hppa-unknown
 				basic_os=linux
 				;;
-			psp)
-				basic_machine=mipsallegrexel-sony
-				basic_os=psp
-				;;
 			pw32)
 				basic_machine=i586-unknown
 				basic_os=pw32
@@ -647,6 +643,10 @@ case $1 in
 				basic_machine=ymp-cray
 				basic_os=unicos
 				;;
+			psp)
+				basic_machine=mipsallegrexel-psp
+				os=elf
+				;;
 			*)
 				basic_machine=$1
 				basic_os=
@@ -659,6 +659,10 @@ esac
 case $basic_machine in
 	# Here we handle the default manufacturer of certain CPU types.  It is in
 	# some cases the only manufacturer, in others, it is the most popular.
+	mipsallegrexel-*)
+		cpu=mipsallegrexel
+		vendor=psp
+		;;
 	w89k)
 		cpu=hppa1.1
 		vendor=winbond
@@ -1161,10 +1165,6 @@ case $cpu-$vendor in
 		cpu=nsx
 		vendor=tandem
 		;;
-	mipsallegrexel-sony)
-		cpu=mipsallegrexel
-		vendor=sony
-		;;
 	tile*-*)
 		basic_os=${basic_os:-linux-gnu}
 		;;
@@ -1233,6 +1233,7 @@ case $cpu-$vendor in
 			| mipsisa64sr71k | mipsisa64sr71kel \
 			| mipsr5900 | mipsr5900el \
 			| mipstx39 | mipstx39el \
+			| mipsallegrex | mipsallegrexel \
 			| mmix \
 			| mn10200 | mn10300 \
 			| moxie \
