@@ -479,3 +479,7 @@ Use Loongson EXTension (EXT) instructions.
 mloongson-ext2
 Target Var(TARGET_LOONGSON_EXT2)
 Use Loongson EXTension R2 (EXT2) instructions.
+
+mpreferred-stack-boundary=
+Target RejectNegative Joined Var(mips_preferred_stack_boundary_string)
+Attempt to keep stack aligned to this power of 2

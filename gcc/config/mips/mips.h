@@ -308,6 +308,7 @@ struct mips_cpu_info {
 				     || mips_arch == PROCESSOR_SB1A)
 #define TARGET_SR71K                (mips_arch == PROCESSOR_SR71000)
 #define TARGET_XLP                  (mips_arch == PROCESSOR_XLP)
+#define TARGET_ALLEGREX             (mips_arch == PROCESSOR_ALLEGREX)
 
 /* Scheduling target defines.  */
 #define TUNE_20KC		    (mips_tune == PROCESSOR_20KC)
@@ -342,6 +343,7 @@ struct mips_cpu_info {
 #define TUNE_P5600                  (mips_tune == PROCESSOR_P5600)
 #define TUNE_I6400                  (mips_tune == PROCESSOR_I6400)
 #define TUNE_P6600                  (mips_tune == PROCESSOR_P6600)
+#define TUNE_ALLEGREX               (mips_tune == PROCESSOR_ALLEGREX)
 
 /* True if the pre-reload scheduler should try to create chains of
    multiply-add or multiply-subtract instructions.  For example,
@@ -1078,6 +1080,7 @@ struct mips_cpu_info {
    ST Loongson 2E/2F.  */
 #define ISA_HAS_CONDMOVE        (ISA_HAS_FP_CONDMOVE			\
 				 || TARGET_MIPS5900			\
+				 || TARGET_ALLEGREX			\
 				 || TARGET_LOONGSON_2EF)
 
 /* ISA has LDC1 and SDC1.  */
@@ -1120,11 +1123,13 @@ struct mips_cpu_info {
 
 /* ISA has conditional trap instructions.  */
 #define ISA_HAS_COND_TRAP	(!ISA_MIPS1				\
+				 && !TARGET_ALLEGREX                    \
 				 && !TARGET_MIPS16)
 
 /* ISA has conditional trap with immediate instructions.  */
 #define ISA_HAS_COND_TRAPI	(!ISA_MIPS1				\
 				 && mips_isa_rev <= 5			\
+				 && !TARGET_ALLEGREX                    \
 				 && !TARGET_MIPS16)
 
 /* ISA has integer multiply-accumulate instructions, madd and msub.  */
@@ -1183,7 +1188,8 @@ struct mips_cpu_info {
 #define ISA_HAS_IEEE_754_2008	(mips_isa_rev >= 2)
 
 /* ISA has count leading zeroes/ones instruction (not implemented).  */
-#define ISA_HAS_CLZ_CLO		(mips_isa_rev >= 1 && !TARGET_MIPS16)
+#define ISA_HAS_CLZ_CLO		((mips_isa_rev >= 1 && !TARGET_MIPS16)   \
+				  || TARGET_ALLEGREX)
 
 /* ISA has count trailing zeroes/ones instruction.  */
 #define ISA_HAS_CTZ_CTO		(TARGET_LOONGSON_EXT2)
@@ -1225,6 +1231,7 @@ struct mips_cpu_info {
 
 /* ISA has the "ror" (rotate right) instructions.  */
 #define ISA_HAS_ROR		((mips_isa_rev >= 2			\
+				  || TARGET_ALLEGREX			\
 				  || TARGET_MIPS5400			\
 				  || TARGET_MIPS5500			\
 				  || TARGET_SR71K			\
@@ -1233,7 +1240,11 @@ struct mips_cpu_info {
 
 /* ISA has the WSBH (word swap bytes within halfwords) instruction.
    64-bit targets also provide DSBH and DSHD.  */
-#define ISA_HAS_WSBH		(mips_isa_rev >= 2 && !TARGET_MIPS16)
+#define ISA_HAS_WSBH		((mips_isa_rev >= 2 && !TARGET_MIPS16)  \
+				  || TARGET_ALLEGREX)
+
+/* Similar to WSBH but for 32 bit words. */
+#define ISA_HAS_WSBW		(TARGET_ALLEGREX)
 
 /* ISA has data prefetch instructions.  This controls use of 'pref'.  */
 #define ISA_HAS_PREFETCH	((ISA_MIPS4				\
@@ -1259,10 +1270,12 @@ struct mips_cpu_info {
 #define ISA_HAS_TRUNC_W		(!ISA_MIPS1)
 
 /* ISA includes the MIPS32r2 seb and seh instructions.  */
-#define ISA_HAS_SEB_SEH		(mips_isa_rev >= 2 && !TARGET_MIPS16)
+#define ISA_HAS_SEB_SEH		((mips_isa_rev >= 2 && !TARGET_MIPS16)  \
+				  || TARGET_ALLEGREX)
 
 /* ISA includes the MIPS32/64 rev 2 ext and ins instructions.  */
-#define ISA_HAS_EXT_INS		(mips_isa_rev >= 2 && !TARGET_MIPS16)
+#define ISA_HAS_EXT_INS		((mips_isa_rev >= 2 && !TARGET_MIPS16)  \
+				  || TARGET_ALLEGREX)
 
 /* ISA has instructions for accessing top part of 64-bit fp regs.  */
 #define ISA_HAS_MXHC1		(!TARGET_FLOAT32	\
@@ -1323,6 +1336,7 @@ struct mips_cpu_info {
    earlier-ISA CPUs for which CPU documentation declares that the
    instructions are really interlocked.  */
 #define ISA_HAS_HILO_INTERLOCKS	(mips_isa_rev >= 1			\
+				 || TARGET_ALLEGREX 			\
 				 || TARGET_MIPS5500			\
 				 || TARGET_MIPS5900			\
 				 || TARGET_LOONGSON_2EF)
@@ -2411,7 +2425,7 @@ enum reg_class
    `crtl->outgoing_args_size'.  */
 #define OUTGOING_REG_PARM_STACK_SPACE(FNTYPE) 1
 
-#define STACK_BOUNDARY (TARGET_NEWABI ? 128 : 64)
+#define STACK_BOUNDARY (mips_preferred_stack_boundary)
 
 /* Symbolic macros for the registers used to return integer and floating
    point values.  */
@@ -2538,7 +2552,7 @@ typedef struct mips_args {
 /* Treat LOC as a byte offset from the stack pointer and round it up
    to the next fully-aligned offset.  */
 #define MIPS_STACK_ALIGN(LOC) \
-  (TARGET_NEWABI ? ROUND_UP ((LOC), 16) : ROUND_UP ((LOC), 8))
+  (ROUND_UP ((LOC), mips_preferred_stack_align))
 
 
 /* Output assembler code to FILE to increment profiler label # LABELNO
@@ -3186,6 +3200,9 @@ while (0)
 	.set pop\n\
 	" TEXT_SECTION_ASM_OP);
 #endif
+
+extern unsigned int mips_preferred_stack_boundary;
+extern unsigned int mips_preferred_stack_align;
 
 #ifndef HAVE_AS_TLS
 #define HAVE_AS_TLS 0

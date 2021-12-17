@@ -2717,6 +2717,17 @@ mipstx39-*-elf* | mipstx39el-*-elf*)
 	tm_file="elfos.h newlib-stdint.h ${tm_file} mips/r3900.h mips/elf.h"
 	tmake_file="mips/t-r3900"
 	;;
+mipsallegrex-*-elf* | mipsallegrexel-*-elf*)
+	tm_file="elfos.h newlib-stdint.h ${tm_file} mips/elf.h"
+	tmake_file="mips/t-elf"
+	target_cpu_default="MASK_SINGLE_FLOAT|MASK_DIVIDE_BREAKS"
+	tm_defines="MIPS_ISA_DEFAULT=2 MIPS_CPU_STRING_DEFAULT=\\\"allegrex\\\" MIPS_ABI_DEFAULT=ABI_EABI"
+	case ${target} in
+	mipsallegrex*-psp-elf*)
+		tm_file="${tm_file} mips/psp.h"
+		;;
+	esac
+	;;
 mmix-knuth-mmixware)
 	tm_file="${tm_file} newlib-stdint.h"
 	use_gcc_stdint=wrap
@@ -4048,8 +4059,9 @@ fi
 # Infer a default setting for --with-fpu.
 if test x$with_fpu = x; then
   case ${target} in
-    mips64r5900-*-* | mips64r5900el-*-* | mipsr5900-*-* | mipsr5900el-*-*)
-      # The R5900 FPU only supports single precision.
+    mips64r5900-*-* | mips64r5900el-*-* | mipsr5900-*-* | mipsr5900el-*-* | \
+    mipsallegrex-*-* | mipsallegrexel-*-*)
+      # The R5900 and Allegrex FPU only supports single precision.
       with_fpu=single
       ;;
   esac
