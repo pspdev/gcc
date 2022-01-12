@@ -19,13 +19,22 @@ along with GCC; see the file COPYING.  If not, write to
 the Free Software Foundation, 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.  */
 
+#undef  LIB_SPEC
+#define LIB_SPEC " \
+    -lm \
+    --start-group \
+    -lcglue \
+    %{g:-lg} %{!g:-lc} \
+    --end-group \
+    -lpsputility -lpsprtc -lpspnet_inet -lpspnet_resolver \
+    -lpspmodinfo -lpspuser -lpspkernel"
+
 /* Override the startfile spec to include crt0.o. */
 #undef STARTFILE_SPEC
 #define STARTFILE_SPEC "crt0%O%s crti%O%s crtbegin%O%s"
 
 #undef SUBTARGET_CPP_SPEC
-#define SUBTARGET_CPP_SPEC "-DPSP=1 -D__psp__=1 -D_PSP=1"
+#define SUBTARGET_CPP_SPEC "-DPSP=1 -D__PSP__=1 -D_PSP=1 -D__psp__=1"
 
-/* Get rid of the .pdr section. */
-#undef SUBTARGET_ASM_SPEC
-#define SUBTARGET_ASM_SPEC "-mno-pdr"
+#undef ENDFILE_SPEC
+#define ENDFILE_SPEC "crtend%O%s crtn%O%s"
