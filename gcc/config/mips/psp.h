@@ -23,11 +23,13 @@ Boston, MA 02111-1307, USA.  */
 #define LIB_SPEC " \
     -lm \
     --start-group \
+    -lpthreadglue \
+    -lpthread \
     -lcglue \
     %{g:-lg} %{!g:-lc} \
     --end-group \
     -lpsputility -lpsprtc -lpspnet_inet -lpspnet_resolver \
-    -lpspmodinfo -lpspuser -lpspkernel"
+    -lpspsdk -lpspmodinfo -lpspuser -lpspkernel"
 
 /* Override the startfile spec to include crt0.o. */
 #undef STARTFILE_SPEC
