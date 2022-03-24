@@ -144,6 +144,17 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
 #ifndef GTHREAD_USE_WEAK
 #define GTHREAD_USE_WEAK 1
 #endif
+
+/* *** PSP Specific change for std::thread ***
+   This file is modified by running sed commands on the 
+   libstdc++-v3/include/Makefile.am
+   These sed commands add prefix to the existing macros
+   this is why we CAN'T add here an #if __PSP__
+   As solution we force here GTHREAD_USE_WEAK to be 0 
+*/
+#undef GTHREAD_USE_WEAK
+#define GTHREAD_USE_WEAK 0
+
 #endif
 #include "gthr-default.h"
 
