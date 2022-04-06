@@ -1264,6 +1264,13 @@ build=$build_alias
 host=$host_alias
 target=$target_alias
 
+# PSP SPECIFIC CODE
+# Skipping some Tests for PSP platform because pspsdk libraries aren't ready yet.
+skipTests=0
+if [ "$target" == "psp" ]; then
+   skipTests=1
+fi
+
 # FIXME: To remove some day.
 if test "x$host_alias" != x; then
   if test "x$build_alias" = x; then
@@ -3816,7 +3823,7 @@ test "$ac_cv_exeext" = no && ac_cv_exeext=
 else
   ac_file=''
 fi
-if test -z "$ac_file"; then :
+if [test -z "$ac_file"] && [ "$skipTests" -eq "0" ]; then :
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 $as_echo "$as_me: failed program was:" >&5
@@ -3864,7 +3871,7 @@ for ac_file in conftest.exe conftest conftest.*; do
     * ) break;;
   esac
 done
-else
+elif "$skipTests" -eq "0"; then :
   { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
 $as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
 as_fn_error $? "cannot compute suffix of executables: cannot compile and link
@@ -14895,7 +14902,7 @@ pthread_t t; pthread_create(&t,NULL,g,NULL);
 _ACEOF
 if ac_fn_c_try_link "$LINENO"; then :
 
-else
+elif "$skipTests" -eq "0"; then :
   as_fn_error $? "Pthreads are required to build libatomic" "$LINENO" 5
 fi
 rm -f core conftest.err conftest.$ac_objext \
