@@ -15558,7 +15558,7 @@ AVAIL_NON_MIPS16 (msa, TARGET_MSA)
    builtin_description fields.  */
 #define DIRECT_ALLEGREX_NO_TARGET_BUILTIN(INSN, FUNCTION_TYPE, TARGET_FLAGS)   \
   { CODE_FOR_allegrex_ ## INSN, MIPS_FP_COND_f, "__builtin_allegrex_" #INSN,            \
-    MIPS_BUILTIN_DIRECT_NO_TARGET, FUNCTION_TYPE, mips_builtin_avail_allegrex }
+    MIPS_BUILTIN_DIRECT_NO_TARGET, FUNCTION_TYPE, mips_builtin_avail_allegrex, false }
 
 /* Define a builtin with a specific function TYPE.  */
 #define SPECIAL_ALLEGREX_BUILTIN(TYPE, INSN, FUNCTION_TYPE, TARGET_FLAGS)  \
