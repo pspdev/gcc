@@ -2719,9 +2719,9 @@ mipstx39-*-elf* | mipstx39el-*-elf*)
 	;;
 mipsallegrex-*-elf* | mipsallegrexel-*-elf*)
 	tm_file="elfos.h newlib-stdint.h ${tm_file} mips/elf.h"
-	tmake_file="mips/t-elf"
+	tmake_file="${tmake_file} mips/t-elf"
 	target_cpu_default="MASK_SINGLE_FLOAT|MASK_DIVIDE_BREAKS"
-	tm_defines="MIPS_ISA_DEFAULT=2 MIPS_CPU_STRING_DEFAULT=\\\"allegrex\\\" MIPS_ABI_DEFAULT=ABI_EABI"
+	tm_defines="${tm_defines} MIPS_ISA_DEFAULT=2 MIPS_CPU_STRING_DEFAULT=\\\"allegrex\\\" MIPS_ABI_DEFAULT=ABI_EABI"
 	case ${target} in
 	mipsallegrex*-psp-elf*)
 		tm_file="${tm_file} mips/psp.h"

@@ -1,0 +1,3 @@
+# Disable use of GP-relative addressing
+CFLAGS_FOR_TARGET += -mno-gpopt
+CXXFLAGS_FOR_TARGET += -mno-gpopt

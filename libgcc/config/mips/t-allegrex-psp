@@ -1,0 +1,2 @@
+# Disable use of GP-relative addressing in startup code.
+CRTSTUFF_T_CFLAGS += -mno-gpopt
