@@ -1087,10 +1087,8 @@ mips-wrs-vxworks)
 mipstx39-*-elf* | mipstx39el-*-elf*)
 	tmake_file="$tmake_file mips/t-crtstuff mips/t-mips16"
 	;;
-mips*-psp*)
-	tmake_file="${tmake_file} mips/t-elf mips/t-crtstuff"
-	target_cpu_default="MASK_SINGLE_FLOAT|MASK_DIVIDE_BREAKS"
-	tm_file="${tm_file}"
+mipsallegrex*-psp*)
+	tmake_file="$tmake_file mips/t-allegrex-psp"
 	extra_parts="$extra_parts crti.o crtn.o"
 	;;
 mmix-knuth-mmixware)
