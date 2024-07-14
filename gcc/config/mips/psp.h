@@ -27,6 +27,7 @@ Boston, MA 02111-1307, USA.  */
     -lpthread \
     -lcglue \
     %{g:-lg} %{!g:-lc} \
+    %{pg:-lpspprof} \
     --end-group \
     -lpsputility -lpsprtc -lpspnet_inet -lpspnet_resolver \
     -lpspsdk -lpspmodinfo -lpspuser -lpspkernel"
