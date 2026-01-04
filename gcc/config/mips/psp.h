@@ -30,7 +30,7 @@ Boston, MA 02111-1307, USA.  */
     %{pg:-lpspprof} \
     --end-group \
     -lpsputility -lpsprtc -lpspnet_inet -lpspnet_resolver \
-    -lpspsdk -lpspmodinfo -lpspuser -lpspkernel"
+    -lpspsdk -lpspmodinfo -lpspuser"
 
 /* Override the startfile spec to include crt0.o. */
 #undef STARTFILE_SPEC
